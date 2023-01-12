@@ -4,6 +4,7 @@ const {
 	requireAdmin,
 } = require('../../middlewares/requireAuth.middleware')
 const { log } = require('../../middlewares/logger.middleware')
+
 const { addNote, getNotes, deleteNote } = require('./note.controller')
 const router = express.Router()
 

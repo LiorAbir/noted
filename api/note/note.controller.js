@@ -1,83 +1,73 @@
-const logger = require('../../services/logger.service')
-const userService = require('../user/user.service')
-const authService = require('../auth/auth.service')
-// const socketService = require('../../services/socket.service')
 const noteService = require('./note.service')
+const logger = require('../../services/logger.service')
+// const userService = require('../user/user.service')
+// const authService = require('../auth/auth.service')
+// const socketService = require('../../services/socket.service')
 
+//GET LIST
 async function getNotes(req, res) {
 	try {
+		logger.debug('Getting notes')
 		const notes = await noteService.query(req.query)
-		res.send(notes)
+		res.json(notes)
 	} catch (err) {
-		logger.error('Cannot get notes', err)
+		logger.error('Failed to get notes', err)
 		res.status(500).send({ err: 'Failed to get notes' })
 	}
 }
 
-async function deleteNote(req, res) {
+//GET BY ID
+async function getNoteById(req, res) {
 	try {
-		const deletedCount = await noteService.remove(req.params.id)
-		if (deletedCount === 1) {
-			res.send({ msg: 'Deleted successfully' })
-		} else {
-			res.status(400).send({ err: 'Cannot remove review' })
-		}
+		const noteId = req.params.id
+		const note = noteService.getById(noteId)
+		res.json(note)
 	} catch (err) {
-		logger.error('Failed to delete review', err)
-		res.status(500).send({ err: 'Failed to delete review' })
+		logger.err('Failed to get note', err)
+		res.status(500).send({ err: 'Failed to get note' })
 	}
 }
 
+//POST (ADD)
 async function addNote(req, res) {
-	var loggedinUser = authService.validateToken(req.cookies.loginToken)
-
 	try {
-		var note = req.body
-		// note.byUserId = loggedinUser._id
-		note = await noteService.add(review)
-
-		// prepare the updated review for sending out
-		// review.aboutUser = await userService.getById(review.aboutUserId)
-
-		// Give the user credit for adding a review
-		// var user = await userService.getById(review.byUserId)
-		// user.score += 10
-		// loggedinUser.score += 10
-
-		// loggedinUser = await userService.update(loggedinUser)
-		// review.byUser = loggedinUser
-
-		// User info is saved also in the login-token, update it
-		const loginToken = authService.getLoginToken(loggedinUser)
-		res.cookie('loginToken', loginToken)
-
-		socketService.broadcast({
-			type: 'review-added',
-			data: review,
-			userId: review.byUserId,
-		})
-		socketService.emitToUser({
-			type: 'review-about-you',
-			data: review,
-			userId: review.aboutUserId,
-		})
-
-		const fullUser = await userService.getById(loggedinUser._id)
-		socketService.emitTo({
-			type: 'user-updated',
-			data: fullUser,
-			label: fullUser._id,
-		})
-
-		res.send(review)
+		const note = req.body
+		const addedNote = await noteService.add(note)
+		res.json(addedNote)
 	} catch (err) {
-		logger.error('Failed to add review', err)
-		res.status(500).send({ err: 'Failed to add review' })
+		logger.error('Failed to add note', err)
+		res.status(500).send({ err: 'Failed to add note' })
+	}
+}
+
+//PUT (UPDATE)
+async function updateNote(req, res) {
+	try {
+		const note = req.body
+		const updatedNote = await noteService.update(note)
+		res.json(updatedNote)
+	} catch (err) {
+		logger.error('Failed to update note', err)
+		res.status(500).send({ err: 'Failed to update note' })
+	}
+}
+
+//DELETE
+async function deleteNote(req, res) {
+	try {
+		const noteId = req.params.id
+		await noteService.remove(noteId)
+		res.send('Removed')
+	} catch (err) {
+		logger.error('Failed to delete note', err)
+		res.status(500).send({ err: 'Failed to delete note' })
 	}
 }
 
 module.exports = {
 	getNotes,
-	deleteNote,
+	getNoteById,
 	addNote,
+	updateNote,
+	deleteNote,
 }
