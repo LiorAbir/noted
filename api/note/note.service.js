@@ -20,17 +20,15 @@ async function query(filterBy, user) {
 async function getById(noteId, user) {
 	try {
 		const noteList = await _getUserList(user)
+
+		const note = noteList.find((note) => note._id === noteId)
+
 		// const note = await noteList.findOne({ _id: noteId })
-		// const collection = await dbService.getCollection('note')
 		// const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
-		// const notesList = await notes.find({noteList})
-
-		console.log(note)
-
 		// const noteList = await collection.find('noteList').toArray()
+		// const collection = await dbService.getCollection('note')
 		// const note = await collection.findOne({ _id: noteId })
-		// console.log(notes, 'note')
-		// return note
+		return note
 	} catch (err) {
 		logger.error(`While finding note ${noteId}`, err)
 		throw err

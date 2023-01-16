@@ -25,7 +25,7 @@ async function getNoteById(req, res) {
 	const loggedInUser = authService.validateToken(req.cookies.loginToken)
 	try {
 		const noteId = req.params.id
-		const note = noteService.getById(noteId, loggedInUser)
+		const note = await noteService.getById(noteId, loggedInUser)
 		res.json(note)
 	} catch (err) {
 		logger.err('Failed to get note', err)
