@@ -3,11 +3,13 @@ const logger = require('../../services/logger.service')
 const ObjectId = require('mongodb').ObjectId
 // const asyncLocalStorage = require('../../services/als.service')
 
-async function query(filterBy) {
+async function query(filterBy, user) {
 	try {
-		const criteria = _buildCriteria(filterBy)
+		const criteria = _buildCriteria(filterBy, user)
 		const collection = await dbService.getCollection('note')
 		let notes = await collection.find(criteria).toArray()
+		// console.log('crie', criteria)
+		// console.log(notes, 'notes')
 		return notes
 	} catch (err) {
 		logger.error('Cannot find notes', err)
@@ -15,11 +17,20 @@ async function query(filterBy) {
 	}
 }
 
-async function getById(noteId) {
+async function getById(noteId, user) {
 	try {
-		const collection = await dbService.getCollection('note')
-		const note = collection.findOne({ _id: ObjectId(noteId) })
-		return note
+		const noteList = await _getUserList(user)
+		// const note = await noteList.findOne({ _id: noteId })
+		// const collection = await dbService.getCollection('note')
+		// const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
+		// const notesList = await notes.find({noteList})
+
+		console.log(note)
+
+		// const noteList = await collection.find('noteList').toArray()
+		// const note = await collection.findOne({ _id: noteId })
+		// console.log(notes, 'note')
+		// return note
 	} catch (err) {
 		logger.error(`While finding note ${noteId}`, err)
 		throw err
@@ -27,6 +38,7 @@ async function getById(noteId) {
 }
 
 async function add(note) {
+	const collection = _getUserList(loggedInUser)
 	try {
 		const collection = await dbService.getCollection('note')
 		const addedNote = await collection.insertOne(note)
@@ -60,6 +72,26 @@ async function remove(noteId) {
 		logger.error(`Cannot remove note ${noteId}`, err)
 		throw err
 	}
+}
+
+async function _getUserList(user) {
+	const collection = await dbService.getCollection('note')
+	const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
+	return notes[0].noteList
+}
+
+function _buildCriteria(filterBy, user) {
+	const criteria = {}
+	if (user) criteria.userId = ObjectId(user._id)
+	return criteria
+}
+
+module.exports = {
+	query,
+	getById,
+	add,
+	update,
+	remove,
 }
 
 // async function query(filterBy = {}) {
@@ -148,17 +180,3 @@ async function remove(noteId) {
 // 		throw err
 // 	}
 // }
-
-function _buildCriteria(filterBy) {
-	const criteria = {}
-	if (filterBy.byUserId) criteria.byUserId = filterBy.byUserId
-	return criteria
-}
-
-module.exports = {
-	query,
-	getById,
-	add,
-	update,
-	remove,
-}

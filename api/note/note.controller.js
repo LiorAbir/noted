@@ -1,14 +1,18 @@
 const noteService = require('./note.service')
 const logger = require('../../services/logger.service')
-// const userService = require('../user/user.service')
-// const authService = require('../auth/auth.service')
+const userService = require('../user/user.service')
+const authService = require('../auth/auth.service')
 // const socketService = require('../../services/socket.service')
 
-//GET LIST
+//GET NOTES
 async function getNotes(req, res) {
 	try {
 		logger.debug('Getting notes')
-		const notes = await noteService.query(req.query)
+		const loggedInUser = authService.validateToken(req.cookies.loginToken)
+		// if(!loggedInUser) logger.error('Require User', err)
+
+		const notes = await noteService.query(req.query, loggedInUser)
+		// console.log(notes)
 		res.json(notes)
 	} catch (err) {
 		logger.error('Failed to get notes', err)
@@ -18,9 +22,10 @@ async function getNotes(req, res) {
 
 //GET BY ID
 async function getNoteById(req, res) {
+	const loggedInUser = authService.validateToken(req.cookies.loginToken)
 	try {
 		const noteId = req.params.id
-		const note = noteService.getById(noteId)
+		const note = noteService.getById(noteId, loggedInUser)
 		res.json(note)
 	} catch (err) {
 		logger.err('Failed to get note', err)

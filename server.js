@@ -1,7 +1,7 @@
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path')
-const cookieParser = require('cookie-parser')
 
 const app = express()
 const http = require('http').createServer(app)
@@ -31,8 +31,8 @@ const noteRoutes = require('./api/note/note.routes')
 // const {setupSocketAPI} = require('./services/socket.service')
 
 // routes
-const setupAsyncLocalStorage = require('./middlewares/setupAls.middleware')
-app.all('*', setupAsyncLocalStorage)
+// const setupAsyncLocalStorage = require('./middlewares/setupAls.middleware')
+// app.all('*', setupAsyncLocalStorage)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)

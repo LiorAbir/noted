@@ -35,13 +35,13 @@ async function getById(userId) {
 		const collection = await dbService.getCollection('user')
 		const user = await collection.findOne({ _id: ObjectId(userId) })
 		delete user.password
-
 		return user
 	} catch (err) {
 		logger.error(`while finding user by id: ${userId}`, err)
 		throw err
 	}
 }
+
 async function getByUsername(username) {
 	try {
 		const collection = await dbService.getCollection('user')
