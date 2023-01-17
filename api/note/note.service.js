@@ -48,15 +48,13 @@ async function add(note, user) {
 	}
 }
 
-async function update(note) {
+async function update(note, user) {
 	const notes = await _getNotes(user)
 	const noteList = notes[0].noteList
 	try {
-		let id = ObjectId(note._id)
-		delete note._id
-
-		const collection = await dbService.getCollection('note')
-		await collection.updateOne({ _id: id }, { $set: { ...toy } })
+		const idx = noteList.findIndex((n) => n._id === note._id)
+		noteList.splice(idx, 1, note)
+		_updateList(notes)
 		return note
 	} catch (err) {
 		logger.error(`Cannot update toy ${noteId}`, err)
@@ -64,10 +62,16 @@ async function update(note) {
 	}
 }
 
-async function remove(noteId) {
+async function remove(noteId, user) {
+	const notes = await _getNotes(user)
+	const noteList = notes[0].noteList
 	try {
-		const collection = await dbService.getCollection('note')
-		await collection.deleteOne({ _id: ObjectId(noteId) })
+		const idx = noteList.findIndex((n) => n._id === noteId)
+		noteList.splice(idx, 1)
+		_updateList(notes)
+
+		// const collection = await dbService.getCollection('note')
+		// await collection.deleteOne({ _id: ObjectId(noteId) })
 		return noteId
 	} catch (err) {
 		logger.error(`Cannot remove note ${noteId}`, err)

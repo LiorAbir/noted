@@ -48,9 +48,10 @@ async function addNote(req, res) {
 
 //PUT (UPDATE)
 async function updateNote(req, res) {
+	const loggedInUser = authService.validateToken(req.cookies.loginToken)
 	try {
 		const note = req.body
-		const updatedNote = await noteService.update(note)
+		const updatedNote = await noteService.update(note, loggedInUser)
 		res.json(updatedNote)
 	} catch (err) {
 		logger.error('Failed to update note', err)
@@ -60,9 +61,10 @@ async function updateNote(req, res) {
 
 //DELETE
 async function deleteNote(req, res) {
+	const loggedInUser = authService.validateToken(req.cookies.loginToken)
 	try {
 		const noteId = req.params.id
-		await noteService.remove(noteId)
+		await noteService.remove(noteId, loggedInUser)
 		res.send('Removed')
 	} catch (err) {
 		logger.error('Failed to delete note', err)
