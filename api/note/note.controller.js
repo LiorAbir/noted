@@ -35,9 +35,10 @@ async function getNoteById(req, res) {
 
 //POST (ADD)
 async function addNote(req, res) {
+	const loggedInUser = authService.validateToken(req.cookies.loginToken)
 	try {
 		const note = req.body
-		const addedNote = await noteService.add(note)
+		const addedNote = await noteService.add(note, loggedInUser)
 		res.json(addedNote)
 	} catch (err) {
 		logger.error('Failed to add note', err)

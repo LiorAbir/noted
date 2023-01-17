@@ -19,7 +19,8 @@ async function query(filterBy, user) {
 
 async function getById(noteId, user) {
 	try {
-		const noteList = await _getUserList(user)
+		const notes = await _getNotes(user)
+		const noteList = notes[0].noteList
 
 		const note = noteList.find((note) => note._id === noteId)
 
@@ -35,12 +36,12 @@ async function getById(noteId, user) {
 	}
 }
 
-async function add(note) {
-	const collection = _getUserList(loggedInUser)
+async function add(note, user) {
+	const notes = await _getNotes(user)
+	const noteList = notes[0].noteList
 	try {
-		const collection = await dbService.getCollection('note')
-		const addedNote = await collection.insertOne(note)
-		return addedNote
+		noteList.unshift(note)
+		_updateList(notes)
 	} catch (err) {
 		logger.error('Cannot insert note', err)
 		throw err
@@ -48,9 +49,11 @@ async function add(note) {
 }
 
 async function update(note) {
+	const notes = await _getNotes(user)
+	const noteList = notes[0].noteList
 	try {
 		let id = ObjectId(note._id)
-		delete toy._id
+		delete note._id
 
 		const collection = await dbService.getCollection('note')
 		await collection.updateOne({ _id: id }, { $set: { ...toy } })
@@ -72,10 +75,21 @@ async function remove(noteId) {
 	}
 }
 
-async function _getUserList(user) {
+async function _updateList(notes) {
+	let id = ObjectId(notes[0]._id)
+	delete notes[0]._id
+	// let userId = ObjectId(notes[0].userId)
+	// delete notes[0].userId
+
+	const noteList = notes[0].noteList
+	const collection = await dbService.getCollection('note')
+	await collection.updateOne({ _id: id }, { $set: { noteList } })
+}
+
+async function _getNotes(user) {
 	const collection = await dbService.getCollection('note')
 	const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
-	return notes[0].noteList
+	return notes
 }
 
 function _buildCriteria(filterBy, user) {
