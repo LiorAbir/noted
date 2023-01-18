@@ -42,6 +42,7 @@ async function add(note, user) {
 	try {
 		noteList.unshift(note)
 		_updateList(notes)
+		return note
 	} catch (err) {
 		logger.error('Cannot insert note', err)
 		throw err
@@ -54,10 +55,10 @@ async function update(note, user) {
 	try {
 		const idx = noteList.findIndex((n) => n._id === note._id)
 		noteList.splice(idx, 1, note)
-		_updateList(notes)
+		await _updateList(notes)
 		return note
 	} catch (err) {
-		logger.error(`Cannot update toy ${noteId}`, err)
+		logger.error(`Cannot update toy ${note._id}`, err)
 		throw err
 	}
 }
