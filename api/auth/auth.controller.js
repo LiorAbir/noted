@@ -1,7 +1,9 @@
-const authService = require('./auth.service')
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
 const ObjectId = require('mongodb').ObjectId
+
+const authService = require('./auth.service')
+const boardService = require('../board/board.service')
 
 async function login(req, res) {
 	const { username, password } = req.body
@@ -33,10 +35,19 @@ async function signup(req, res) {
 
 		const loginToken = authService.getLoginToken(user)
 
+		const newBoard = {
+			userId: ObjectId(user._id),
+			labels: [],
+			noteList: [],
+		}
+		boardService.add(newBoard)
+
+		///
 		const collection = await dbService.getCollection('note')
 		const newNotes = {
 			userId: ObjectId(user._id),
 			noteList: [],
+			labels: [],
 		}
 		collection.insertOne(newNotes)
 

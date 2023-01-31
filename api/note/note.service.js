@@ -8,8 +8,6 @@ async function query(filterBy, user) {
 		const criteria = _buildCriteria(filterBy, user)
 		const collection = await dbService.getCollection('note')
 		let notes = await collection.find(criteria).toArray()
-		// console.log('crie', criteria)
-		// console.log(notes, 'notes')
 		return notes
 	} catch (err) {
 		logger.error('Cannot find notes', err)
