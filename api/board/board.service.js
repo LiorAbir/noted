@@ -3,12 +3,11 @@ const logger = require('../../services/logger.service')
 const ObjectId = require('mongodb').ObjectId
 
 //
-async function query(filterBy, user) {
+async function query(user, filterBy = {}) {
 	try {
-		const criteria = _buildCriteria(filterBy, user)
+		const criteria = _buildCriteria(user, filterBy)
 		const collection = await dbService.getCollection('board')
 		let board = await collection.find(criteria).toArray()
-		console.log(board)
 		return board
 	} catch (err) {
 		logger.error('cannot find board')
@@ -38,16 +37,22 @@ async function add(board) {
 	}
 }
 
-async function update(board, user) {
+async function update(board) {
 	try {
 		let id = ObjectId(board._id)
 		delete board._id
 
+		let userId = ObjectId(board.userId)
+		delete board.userId
+
 		const collection = await dbService.getCollection('board')
-		await collection.updateOne({ _id: id }, { $set: { ...board } })
+		await collection.updateOne(
+			{ _id: id, userId: userId },
+			{ $set: { ...board } }
+		)
 		return board
 	} catch (err) {
-		logger.error(`cannot update board ${boardId}`, err)
+		logger.error(`cannot update board ${board._id}`, err)
 		throw err
 	}
 }
@@ -63,7 +68,7 @@ async function remove(boardId, user) {
 	}
 }
 
-function _buildCriteria(filterBy, user) {
+function _buildCriteria(user, filterBy) {
 	const criteria = {}
 	if (user) criteria.userId = ObjectId(user._id)
 	return criteria

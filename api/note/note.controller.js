@@ -12,7 +12,6 @@ async function getNotes(req, res) {
 		// if(!loggedInUser) logger.error('Require User', err)
 
 		const notes = await noteService.query(req.query, loggedInUser)
-		// console.log(notes)
 		res.json(notes)
 	} catch (err) {
 		logger.error('Failed to get notes', err)

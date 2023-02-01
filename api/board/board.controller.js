@@ -6,9 +6,7 @@ async function getBoard(req, res) {
 	try {
 		logger.debug('Getting board')
 		const loggedInUser = authService.validateToken(req.cookies.loginToken)
-
-		const board = await boardService.query(req.query, loggedInUser)
-		console.log(board)
+		const board = await boardService.query(loggedInUser, req.query)
 		res.json(board)
 	} catch (err) {
 		logger.error('failed to get board', err)

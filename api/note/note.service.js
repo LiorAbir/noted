@@ -1,12 +1,13 @@
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
 const ObjectId = require('mongodb').ObjectId
+const boardService = require('../board/board.service')
 // const asyncLocalStorage = require('../../services/als.service')
 
 async function query(filterBy, user) {
 	try {
 		const criteria = _buildCriteria(filterBy, user)
-		const collection = await dbService.getCollection('note')
+		const collection = await dbService.getCollection('board')
 		let notes = await collection.find(criteria).toArray()
 		return notes
 	} catch (err) {
@@ -17,17 +18,14 @@ async function query(filterBy, user) {
 
 async function getById(noteId, user) {
 	try {
-		const notes = await _getNotes(user)
-		const noteList = notes[0].noteList
-
+		const board = await boardService.query(user)
+		const noteList = board[0].noteList
 		const note = noteList.find((note) => note._id === noteId)
-
-		// const note = await noteList.findOne({ _id: noteId })
-		// const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
-		// const noteList = await collection.find('noteList').toArray()
-		// const collection = await dbService.getCollection('note')
-		// const note = await collection.findOne({ _id: noteId })
 		return note
+
+		// const notes = await _getNotes(user)
+		// const noteList = notes[0].noteList
+		// const note = noteList.find((note) => note._id === noteId)
 	} catch (err) {
 		logger.error(`While finding note ${noteId}`, err)
 		throw err
@@ -35,12 +33,17 @@ async function getById(noteId, user) {
 }
 
 async function add(note, user) {
-	const notes = await _getNotes(user)
-	const noteList = notes[0].noteList
 	try {
+		const board = await boardService.query(user)
+		const noteList = board[0].noteList
 		noteList.unshift(note)
-		_updateList(notes)
+		boardService.update(board[0])
 		return note
+
+		// const notes = await _getNotes(user)
+		// const noteList = notes[0].noteList
+		// noteList.unshift(note)
+		// _updateList(notes)
 	} catch (err) {
 		logger.error('Cannot insert note', err)
 		throw err
@@ -48,13 +51,20 @@ async function add(note, user) {
 }
 
 async function update(note, user) {
-	const notes = await _getNotes(user)
-	const noteList = notes[0].noteList
 	try {
+		const board = await boardService.query(user)
+		const noteList = board[0].noteList
 		const idx = noteList.findIndex((n) => n._id === note._id)
 		noteList.splice(idx, 1, note)
-		await _updateList(notes)
+		boardService.update(board[0])
 		return note
+
+		// const notes = await _getNotes(user)
+		// const noteList = notes[0].noteList
+		// const idx = noteList.findIndex((n) => n._id === note._id)
+		// noteList.splice(idx, 1, note)
+		// await _updateList(notes)
+		// return note
 	} catch (err) {
 		logger.error(`Cannot update toy ${note._id}`, err)
 		throw err
@@ -62,37 +72,24 @@ async function update(note, user) {
 }
 
 async function remove(noteId, user) {
-	const notes = await _getNotes(user)
-	const noteList = notes[0].noteList
 	try {
+		const board = await boardService.query(user)
+		const noteList = board[0].noteList
 		const idx = noteList.findIndex((n) => n._id === noteId)
 		noteList.splice(idx, 1)
-		_updateList(notes)
-
-		// const collection = await dbService.getCollection('note')
-		// await collection.deleteOne({ _id: ObjectId(noteId) })
+		boardService.update(board[0])
 		return noteId
+
+		// const notes = await _getNotes(user)
+		// const noteList = notes[0].noteList
+		// const idx = noteList.findIndex((n) => n._id === noteId)
+		// noteList.splice(idx, 1)
+		// _updateList(notes)
+		// return noteId
 	} catch (err) {
 		logger.error(`Cannot remove note ${noteId}`, err)
 		throw err
 	}
-}
-
-async function _updateList(notes) {
-	let id = ObjectId(notes[0]._id)
-	delete notes[0]._id
-	// let userId = ObjectId(notes[0].userId)
-	// delete notes[0].userId
-
-	const noteList = notes[0].noteList
-	const collection = await dbService.getCollection('note')
-	await collection.updateOne({ _id: id }, { $set: { noteList } })
-}
-
-async function _getNotes(user) {
-	const collection = await dbService.getCollection('note')
-	const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
-	return notes
 }
 
 function _buildCriteria(filterBy, user) {
@@ -108,6 +105,21 @@ module.exports = {
 	update,
 	remove,
 }
+
+// async function _updateList(board) {
+// 	let id = ObjectId(board[0]._id)
+// 	delete board[0]._id
+// 	const noteList = board[0].noteList
+// 	const collection = await dbService.getCollection('board')
+// 	await collection.updateOne({ _id: id }, { $set: { noteList } })
+// }
+
+// async function _getNotes(user) {
+// 	return boardService.query(user)
+// 	// const collection = await dbService.getCollection('board')
+// 	// const notes = await collection.find({ userId: ObjectId(user._id) }).toArray()
+// 	// return notes
+// }
 
 // async function query(filterBy = {}) {
 // 	try {
