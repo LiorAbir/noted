@@ -38,6 +38,7 @@ async function signup(req, res) {
 		const newBoard = {
 			userId: ObjectId(user._id),
 			labels: [],
+			noteOrder: [],
 			noteList: [],
 		}
 		boardService.add(newBoard)
