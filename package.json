@@ -4,9 +4,9 @@
 	"description": "production ready server",
 	"main": "server.js",
 	"scripts": {
-		"dev": "nodemon --ignore \"./data\" server.js",
-		"start": "node server.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"start": "set NODE_ENV=development&&nodemon server.js",
+		"server:dev": "set NODE_ENV=development&&nodemon server.js",
+		"server:prod": "set NODE_ENV=production&&node server.js"
 	},
 	"author": "Me",
 	"license": "ISC",
