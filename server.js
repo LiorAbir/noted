@@ -51,5 +51,11 @@ app.get('/**', (req, res) => {
 const logger = require('./services/logger.service')
 const port = process.env.PORT || 3030
 http.listen(port, () => {
-	logger.info('Server is running on port: ' + port)
+	// logger.info('Server is running on port: ' + port)
+	logger.info(`Server listening on http://localhost:${port}`)
 })
+
+//
+// "start": "set NODE_ENV=development&&nodemon server.js",
+// "server:dev": "set NODE_ENV=development&&nodemon server.js",
+// "server:prod": "set NODE_ENV=production&&node server.js"
