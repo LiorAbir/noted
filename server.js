@@ -10,22 +10,25 @@ const http = require('http').createServer(app)
 app.use(cookieParser())
 app.use(express.json())
 
-if (process.env.NODE_ENV === 'production') {
-	app.use(express.static(path.resolve(__dirname, 'public')))
-} else {
-	app.use(express.static(path.resolve(__dirname, 'public')))
-	// const corsOptions = {
-	// 	origin: [
-	// 		'http://127.0.0.1:5173',
-	// 		'http://127.0.0.1:8080',
-	// 		'http://localhost:8080',
-	// 		'http://127.0.0.1:3000',
-	// 		'http://localhost:3030',
-	// 	],
-	// 	credentials: true,
-	// }
-	// app.use(cors(corsOptions))
-}
+app.use(express.static('public'))
+// if (process.env.NODE_ENV === 'production') {
+// } else {
+// 	// app.use(express.static(path.resolve(__dirname, 'public')))
+// 	const corsOptions = {
+// 		origin: [
+// 			'http://127.0.0.1:5173',
+// 			'http://127.0.0.1:8080',
+// 			'http://localhost:8080',
+// 			'http://127.0.0.1:3000',
+// 			'http://localhost:3000',
+// 			'http://127.0.0.1:3030',
+// 			'http://localhost:3030',
+// 			'http://localhost',
+// 		],
+// 		credentials: true,
+// 	}
+// 	app.use(cors(corsOptions))
+// }
 
 const authRoutes = require('./api/auth/auth.routes')
 const userRoutes = require('./api/user/user.routes')
