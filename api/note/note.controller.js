@@ -9,7 +9,8 @@ async function getNotes(req, res) {
 	try {
 		logger.debug('Getting notes')
 		const loggedInUser = authService.validateToken(req.cookies.loginToken)
-		// if(!loggedInUser) logger.error('Require User', err)
+		if (!loggedInUser) logger.error('Require User', err)
+		console.log(loggedInUser)
 
 		const notes = await noteService.query(req.query, loggedInUser)
 		res.json(notes)
