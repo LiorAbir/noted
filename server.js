@@ -12,8 +12,8 @@ app.use(express.json())
 
 if (process.env.NODE_ENV === 'production') {
 	console.log(process.env.NODE_ENV)
-	app.use(express.static('public'))
-	// app.use(express.static(path.resolve(__dirname, 'public')))
+	// app.use(express.static('public'))
+	app.use(express.static(path.resolve(__dirname, 'public')))
 } else {
 	console.log(process.env.NODE_ENV)
 	// app.use(express.static('public'))
@@ -21,13 +21,10 @@ if (process.env.NODE_ENV === 'production') {
 	const corsOptions = {
 		origin: [
 			'http://127.0.0.1:5173',
-			'http://127.0.0.1:8080',
-			'http://localhost:8080',
+			'http://localhost:5173',
+			'http://localhost',
 			'http://127.0.0.1:3000',
 			'http://localhost:3000',
-			'http://127.0.0.1:3030',
-			'http://localhost:3030',
-			'http://localhost',
 		],
 		credentials: true,
 	}
