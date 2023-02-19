@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.resolve(__dirname, 'public')))
 } else {
 	console.log(process.env.NODE_ENV)
+	app.use(express.static(path.resolve(__dirname, 'public')))
 	// app.use(express.static('public'))
 	// app.use(express.static(path.resolve(__dirname, 'public')))
 	const corsOptions = {
@@ -28,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 		],
 		credentials: true,
 	}
-	app.use(cors(corsOptions))
+	// app.use(cors(corsOptions))
 }
 
 const authRoutes = require('./api/auth/auth.routes')
