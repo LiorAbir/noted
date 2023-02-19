@@ -2,6 +2,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path')
+// const { setupSocketAPI } = require('./services/socket.service')
 
 const app = express()
 const http = require('http').createServer(app)
@@ -9,16 +10,11 @@ const http = require('http').createServer(app)
 // Express App Config
 app.use(cookieParser())
 app.use(express.json())
+app.use(express.static('public'))
 
 if (process.env.NODE_ENV === 'production') {
-	console.log(process.env.NODE_ENV)
-	// app.use(express.static('public'))
 	app.use(express.static(path.resolve(__dirname, 'public')))
 } else {
-	console.log(process.env.NODE_ENV)
-	app.use(express.static(path.resolve(__dirname, 'public')))
-	// app.use(express.static('public'))
-	// app.use(express.static(path.resolve(__dirname, 'public')))
 	const corsOptions = {
 		origin: [
 			'http://127.0.0.1:5173',
@@ -29,14 +25,13 @@ if (process.env.NODE_ENV === 'production') {
 		],
 		credentials: true,
 	}
-	// app.use(cors(corsOptions))
+	app.use(cors(corsOptions))
 }
 
 const authRoutes = require('./api/auth/auth.routes')
 const userRoutes = require('./api/user/user.routes')
 const noteRoutes = require('./api/note/note.routes')
 const boardRoutes = require('./api/board/board.routes')
-const { setupSocketAPI } = require('./services/socket.service')
 
 // routes
 const setupAsyncLocalStorage = require('./middlewares/setupAls.middleware')
@@ -46,7 +41,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/note', noteRoutes)
 app.use('/api/board', boardRoutes)
-setupSocketAPI(http)
+// setupSocketAPI(http)
 
 // Make every server-side-route to match the index.html
 // so when requesting http://localhost:3030/index.html/car/123 it will still respond with
@@ -60,6 +55,5 @@ const logger = require('./services/logger.service')
 const port = process.env.PORT || 3030
 http.listen(port, () => {
 	// logger.info('Server is running on port: ' + port)
-	// console.log(process.env.NODE_ENV)
 	logger.info(`Server is ready at port: http://localhost:${port}/#/`)
 })
