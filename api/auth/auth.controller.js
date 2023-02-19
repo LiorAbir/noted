@@ -44,13 +44,13 @@ async function signup(req, res) {
 		boardService.add(newBoard)
 
 		///
-		const collection = await dbService.getCollection('note')
-		const newNotes = {
-			userId: ObjectId(user._id),
-			noteList: [],
-			labels: [],
-		}
-		collection.insertOne(newNotes)
+		// const collection = await dbService.getCollection('note')
+		// const newNotes = {
+		// 	userId: ObjectId(user._id),
+		// 	noteList: [],
+		// 	labels: [],
+		// }
+		// collection.insertOne(newNotes)
 
 		res.cookie('loginToken', loginToken, { sameSite: 'None', secure: true })
 		res.json(user)
